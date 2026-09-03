@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FFF3F6;
+    --bg-panel: #3B1626;
+    --ink: #241019;
+    --pink: #E23A72;
+    --pink-deep: #B22359;
+    --pink-soft: #FFC9DA;
+    --cream: #FFF9F5;
+    --line: rgba(36,16,25,0.14);
+  }
+
+  *{margin:0; padding:0; box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{ background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; overflow-x:hidden; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+  }
+
+  h1,h2,h3{ font-family:'Fraunces', serif; font-weight:500; letter-spacing:-0.01em; }
+  a{ color:inherit; text-decoration:none; }
+  ::selection{ background: var(--pink); color: var(--cream); }
+  :focus-visible{ outline: 2px solid var(--pink-deep); outline-offset: 3px; }
+
+  #blob{
+    position:fixed; top:0; left:0; width:520px; height:520px; border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, rgba(226,58,114,0.30), rgba(226,58,114,0) 68%);
+    pointer-events:none; transform:translate(-50%,-50%); z-index:0;
+    transition: opacity 0.4s ease; will-change: transform;
+  }
+  @media (max-width: 800px){ #blob{ display:none; } }
+
+  .wrap{ max-width: 1180px; margin: 0 auto; padding: 0 40px; position:relative; z-index:1; }
+  @media (max-width: 640px){ .wrap{ padding: 0 22px; } }
+
+  header.site{
+    position:sticky; top:0; z-index:20; backdrop-filter: blur(10px);
+    background: rgba(255,243,246,0.75); border-bottom: 1px solid var(--line);
+  }
+
+  .nav{ display:flex; align-items:center; justify-content:space-between; padding: 18px 40px; max-width: 1180px; margin: 0 auto; }
+  .nav .mark{ font-family:'Fraunces', serif; font-size: 1.15rem; font-weight:600; }
+  .nav .mark span{ color: var(--pink); }
+  .nav ul{ display:flex; gap: 26px; list-style:none; }
+  .nav ul li a{ font-size:0.88rem; font-weight:500; position:relative; padding-bottom:4px; white-space:nowrap; }
+  .nav ul li a::after{ content:''; position:absolute; left:0; bottom:0; width:0%; height:1px; background: var(--pink-deep); transition: width 0.3s ease; }
+  .nav ul li a:hover::after{ width:100%; }
+
+  @media (max-width: 820px){
+    .nav{ padding: 16px 22px; }
+    .nav ul{ gap: 18px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; max-width: 62vw; }
+    .nav ul::-webkit-scrollbar{ display:none; }
+    .nav ul li a{ font-size:0.82rem; }
+  }
+
+  /* ---------- hero ---------- */
+  .hero{ padding: 90px 0 70px; position:relative; }
+  @media (max-width: 640px){ .hero{ padding: 56px 0 46px; } }
+
+  .hero-grid{
+    display:grid;
+    grid-template-columns: 1.3fr 0.7fr;
+    gap: 50px;
+    align-items:center;
+  }
+
+  @media (max-width: 800px){
+    .hero-grid{ grid-template-columns: 1fr; gap: 34px; }
+    .hero-photo{ order:-1; width: 160px; height:160px; margin: 0 auto; }
+  }
+
+  .hero .eyebrow-row{ display:flex; align-items:center; gap:14px; margin-bottom: 26px; color: var(--pink-deep); font-size:0.95rem; }
+  .dot{ width:7px; height:7px; border-radius:50%; background: var(--pink); display:inline-block; animation: pulse 2.2s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{ opacity:1; transform:scale(1); } 50%{ opacity:0.45; transform:scale(0.72); } }
+
+  .hero h1{ font-size: clamp(2.1rem, 7vw, 4.4rem); line-height: 1.08; max-width: 16ch; }
+  .hero .line{ display:block; overflow:hidden; }
+  .hero .line span{ display:block; transform: translateY(115%); animation: rise 0.9s cubic-bezier(.22,1,.36,1) forwards; }
+  .hero .line:nth-child(1) span{ animation-delay: 0.05s; }
+  .hero .line:nth-child(2) span{ animation-delay: 0.18s; color: var(--pink); font-size: 60%; }
+  .hero .line:nth-child(3) span{ animation-delay: 0.31s; }
+  @keyframes rise{ to{ transform: translateY(0); } }
+
+  .hero p.lede{ margin-top: 24px; max-width: 46ch; font-size: 1.02rem; line-height:1.65; color: rgba(36,16,25,0.78); opacity:0; animation: fadeUp 0.8s ease forwards; animation-delay: 0.55s; }
+  .hero .cta-row{ margin-top: 32px; display:flex; gap:16px; flex-wrap:wrap; opacity:0; animation: fadeUp 0.8s ease forwards; animation-delay: 0.7s; }
+  @keyframes fadeUp{ from{ opacity:0; transform: translateY(14px); } to{ opacity:1; transform: translateY(0); } }
+
+  .btn{ display:inline-flex; align-items:center; gap:10px; padding: 14px 26px; border-radius: 100px; font-size:0.95rem; font-weight:600; transition: transform 0.35s cubic-bezier(.22,1,.36,1), box-shadow 0.35s ease; }
+  .btn.primary{ background: var(--pink); color: var(--cream); box-shadow: 0 10px 24px rgba(226,58,114,0.28); }
+  .btn.primary:hover{ transform: translateY(-3px); box-shadow: 0 16px 30px rgba(226,58,114,0.36); }
+  .btn.ghost{ border: 1px solid var(--line); color: var(--ink); }
+  .btn.ghost:hover{ border-color: var(--pink-deep); color: var(--pink-deep); }
+
+ 
+  /* ---------- hero photo circle ---------- */
+  .hero-photo{
+    position:relative;
+    width: 400px;
+    height: 400px;
+    flex-shrink:0;
+    border-radius: 50%;
+    justify-self:end;
+    background: linear-gradient(135deg, #3B1626, #5C1F3B);
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+    border: 6px solid var(--cream);
+    box-shadow: 0 20px 50px rgba(178,35,89,0.22);
+    opacity:0;
+    animation: fadeUp 0.9s ease forwards;
+    animation-delay: 0.4s;
+  }
+ 
+  @media (max-width: 800px){
+    .hero-photo{ order:-1; margin: 0 auto; justify-self:center; }
+  }
+ 
+  .hero-photo img{
+    width:100%; height:100%; object-fit:cover; object-position: center 22%; display:none;
+  }
+ 
+  .hero-photo .photo-placeholder{
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+    color: var(--pink-soft); text-align:center; padding: 20px;
+  }
+ 
+  .hero-photo .photo-placeholder svg{ width:40px; height:40px; opacity:0.9; }
+  .hero-photo .photo-placeholder small{ font-size:0.72rem; color: rgba(255,201,218,0.65); max-width: 20ch; line-height:1.5; }
+
+  /* ---------- marquee ---------- */
+  .marquee{ border-top:1px solid var(--line); border-bottom:1px solid var(--line); background: var(--cream); overflow:hidden; padding: 14px 0; }
+  .marquee .track{ display:flex; width: max-content; gap: 60px; animation: scroll 22s linear infinite; }
+  @keyframes scroll{ from{ transform: translateX(0); } to{ transform: translateX(-50%); } }
+  .marquee span{ font-family:'Fraunces', serif; font-style: italic; font-size: 1rem; color: rgba(36,16,25,0.55); white-space:nowrap; }
+
+  /* ---------- section shared ---------- */
+  section{ padding: 80px 0; }
+  @media (max-width: 640px){ section{ padding: 56px 0; } }
+  .section-head{ display:flex; justify-content:space-between; align-items:flex-end; gap: 30px; margin-bottom: 46px; flex-wrap:wrap; }
+  .section-head h2{ font-size: clamp(1.7rem, 5vw, 2.6rem); }
+  .section-head p{ max-width: 40ch; color: rgba(36,16,25,0.68); line-height:1.6; }
+
+  .reveal{ opacity:0; transform: translateY(28px); transition: opacity 0.7s cubic-bezier(.22,1,.36,1), transform 0.7s cubic-bezier(.22,1,.36,1); }
+  .reveal.in{ opacity:1; transform: translateY(0); }
+
+  /* ---------- sample work: videos ---------- */
+  .video-row{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+  @media (max-width: 760px){
+    .video-row{ grid-template-columns: 1fr; max-width: 320px; margin: 0 auto; }
+  }
+
+  .work-card{
+    background: var(--cream); border: 1px solid var(--line); border-radius: 22px; overflow:hidden;
+    transition: transform 0.4s cubic-bezier(.22,1,.36,1), box-shadow 0.4s ease;
+  }
+  .work-card:hover{ transform: translateY(-6px); box-shadow: 0 24px 46px rgba(178,35,89,0.16); }
+
+  .video-frame{ position:relative; aspect-ratio: 4/5; background: linear-gradient(135deg, #3B1626, #5C1F3B); display:flex; align-items:center; justify-content:center; }
+  .video-frame video{ width:100%; height:100%; object-fit:cover; display:block; }
+
+  .placeholder-note{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; color: var(--pink-soft); text-align:center; padding: 20px; }
+  .placeholder-note svg{ width:44px; height:44px; opacity:0.9; }
+  .placeholder-note small{ font-size:0.78rem; color: rgba(255,201,218,0.65); max-width: 26ch; line-height:1.5; }
+
+  .play-button{
+    width:56px; height:56px; border-radius:50%;
+    background: rgba(255,255,255,0.92);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 10px 26px rgba(0,0,0,0.22);
+    margin-bottom: 4px;
+  }
+  .play-button svg{ width:20px; height:20px; margin-left:3px; }
+
+  .work-card .meta{ padding: 20px 22px 24px; }
+  .work-card .meta .tag{ font-size:0.78rem; color: var(--pink-deep); font-weight:600; margin-bottom:6px; display:block; }
+  .work-card .meta h3{ font-size: 1.15rem; margin-bottom: 6px; }
+  .work-card .meta p{ font-size:0.92rem; color: rgba(36,16,25,0.65); line-height:1.5; }
+
+  /* ---------- sample work image grid (9) ---------- */
+  .image-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  @media (max-width: 900px){ .image-grid{ grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px){ .image-grid{ grid-template-columns: 1fr; } }
+
+  .image-card{
+    background: var(--cream);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    overflow:hidden;
+    transition: transform 0.4s cubic-bezier(.22,1,.36,1), box-shadow 0.4s ease;
+  }
+
+  .image-card:hover{ transform: translateY(-5px); box-shadow: 0 18px 34px rgba(178,35,89,0.18); }
+
+  .image-frame{
+    position:relative; aspect-ratio: 1/1; overflow:hidden;
+    background: linear-gradient(135deg, #5C1F3B, #3B1626);
+  }
+
+  .image-frame img{ width:100%; height:100%; object-fit:cover; display:none; }
+
+  .image-card .placeholder-note small{ max-width: 18ch; }
+  .image-card .placeholder-note svg{ width:30px; height:30px; }
+  .image-card .placeholder-note span{ font-size:0.85rem; }
+
+  .image-card .meta{ padding: 18px 20px 22px; }
+  .image-card .meta .tag{ font-size:0.76rem; color: var(--pink-deep); font-weight:600; margin-bottom:5px; display:block; }
+  .image-card .meta h3{ font-size: 1.05rem; margin-bottom: 5px; }
+  .image-card .meta p{ font-size:0.88rem; color: rgba(36,16,25,0.65); line-height:1.5; }
+
+  /* ---------- about panel ---------- */
+  .panel{ background: var(--bg-panel); color: var(--cream); border-radius: 26px; padding: 60px 56px; display:grid; grid-template-columns: 1.1fr 0.9fr; gap: 50px; align-items:center; }
+  @media (max-width: 800px){ .panel{ grid-template-columns:1fr; padding: 40px 26px; } }
+  .panel h2{ color: var(--cream); font-size: clamp(1.6rem, 5vw, 2.3rem); }
+  .panel p{ line-height:1.7; color: rgba(255,249,245,0.78); margin-top:18px; }
+
+  .stat-list{ display:flex; flex-direction:column; gap: 22px; }
+  .stat-list .stat{ border-top: 1px solid rgba(255,249,245,0.18); padding-top: 16px; }
+  .stat .num{ font-family:'Fraunces', serif; font-size: 1.9rem; color: var(--pink-soft); }
+  .stat .label{ font-size:0.86rem; color: rgba(255,249,245,0.62); margin-top:4px; }
+
+  /* ---------- skills ---------- */
+  .skills-grid{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+  @media (max-width: 900px){ .skills-grid{ grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 640px){ .skills-grid{ grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+
+  .skill-chip{
+    background: var(--cream);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 20px 18px;
+    transition: transform 0.35s cubic-bezier(.22,1,.36,1), box-shadow 0.35s ease, background 0.3s ease;
+  }
+  .skill-chip:hover{ transform: translateY(-4px); box-shadow: 0 16px 30px rgba(178,35,89,0.14); background: var(--pink-soft); }
+  .skill-chip h3{ font-size: 0.98rem; font-weight:600; font-family:'Inter', sans-serif; letter-spacing:-0.005em; }
+
+  /* ---------- work experience timeline ---------- */
+  .timeline{ display:flex; flex-direction:column; }
+
+  .timeline-item{
+    display:grid;
+    grid-template-columns: 160px 1fr;
+    gap: 30px;
+    padding: 26px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .timeline-item:last-child{ border-bottom: 1px solid var(--line); }
+
+  @media (max-width: 640px){
+    .timeline-item{ grid-template-columns: 1fr; gap:6px; }
+  }
+
+  .timeline-item .period{ font-size:0.9rem; color: var(--pink-deep); font-weight:600; }
+  .timeline-item h3{ font-size: 1.15rem; margin-bottom:6px; }
+  .timeline-item .org{ font-size:0.9rem; color: rgba(36,16,25,0.55); margin-bottom:10px; }
+  .timeline-item p{ font-size:0.94rem; line-height:1.6; color: rgba(36,16,25,0.7); max-width: 60ch; }
+
+  /* ---------- contact ---------- */
+  .contact{ text-align:center; padding-bottom: 110px; }
+  .contact h2{ font-size: clamp(1.9rem, 8vw, 3.4rem); max-width: 18ch; margin: 0 auto 24px; }
+  .contact p.sub{ max-width: 42ch; margin: 0 auto 28px; color: rgba(36,16,25,0.68); line-height:1.6; }
+  .contact .links{ margin-top: 34px; display:flex; gap:24px; justify-content:center; flex-wrap:wrap; font-size:0.92rem; }
+  .contact .links a{ border-bottom: 1px solid var(--line); padding-bottom:3px; transition: border-color 0.3s ease, color 0.3s ease; }
+  .contact .links a:hover{ border-color: var(--pink-deep); color: var(--pink-deep); }
+
+  footer{ border-top: 1px solid var(--line); padding: 28px 0; text-align:center; font-size:0.85rem; color: rgba(36,16,25,0.55); }
+</style>
+</head>
+<body>
+
+<div id="blob"></div>
+
+<header class="site">
+  <nav class="nav">
+    <div class="mark">Aprily<span> </span>Cabial</div>
+    <ul>
+      <li><a href="#home">Home</a></li>
+      <li><a href="#about">About me</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#video-work">Video work</a></li>
+      <li><a href="#sample-work">Sample work</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<div class="wrap">
+
+  <!-- 1. HOME -->
+  <section class="hero" id="home">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow-row"><span class="dot"></span> Hello, I'm</div>
+        <h1>
+          <span class="line"><span>Aprily Cabial</span></span>
+          <span class="line"><span> I'm a Cold Caller | Virtual Assistant | Social Media Manager</span></span>
+        </h1>
+        <p class="lede">I'm a dedicated professional who thrives on connecting with people through engaging conversations and persuasive communication. I specialize in building relationships, optimizing sales strategies, and providing exceptional virtual assistance to drive results.</p>
+        <div class="cta-row">
+          <a href="https://drive.google.com/file/d/1cndTwOCdWGU_1b6Vs1CxJP3Kb8UJJGs8/view?usp=sharing" class="btn primary">Download CV</a>
+          <a href="#contact" class="btn ghost">Get in touch</a>
+        </div>
+      </div>
+
+      <div class="hero-photo" id="hero-photo">
+        <img id="hero-img" src="" alt="Portrait photo">
+        <div class="placeholder-note photo-placeholder" id="hero-photo-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+          <span>Add your photo</span>
+          <small>Set the image source in the script section</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="marquee">
+  <div class="track">
+    <span>Social Media Management &nbsp;•&nbsp;Project Management &nbsp;•&nbsp; Video editing &nbsp;•&nbsp; Email Management &nbsp;•&nbsp; Appointment Scheduling &nbsp;•&nbsp;</span>
+     <span>Social Media Management &nbsp;•&nbsp;Project Management &nbsp;•&nbsp; Video editing &nbsp;•&nbsp; Email Management &nbsp;•&nbsp; Appointment Scheduling &nbsp;•&nbsp;</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- 2. ABOUT ME -->
+  <section id="about">
+    <div class="panel reveal">
+      <div>
+        <h2>About me</h2>
+        <p>I'm a Cold Caller and Virtual Assistant who thrives on connecting with people through engaging conversations and persuasive communication. I enjoy building relationships over the phone as much as analyzing call data and optimizing sales strategies to drive results. With a Bachelor's degree in Secondary Education and professional certifications, I bring both expertise and dedication to every project.</p>
+      </div>
+      <div class="stat-list">
+        <div class="stat"><div class="num">3+</div><div class="label">platforms managed day to day</div></div>
+        <div class="stat"><div class="num">Multiple</div><div class="label">Tasks and projects supported<</div></div>
+        <div class="stat"><div class="num">End to end</div><div class="label">From planning to execution</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. MY SKILLS -->
+  <section id="skills">
+    <div class="section-head reveal">
+      <h2>My skills</h2>
+      <p>Here are some of the skills, tools, and strengths I bring to my work and projects.</p>
+    </div>
+    <div class="skills-grid" id="skillsGrid"></div>
+  </section>
+
+  <!-- 4. WORK EXPERIENCE -->
+  <section id="experience">
+    <div class="section-head reveal">
+      <h2>Work experience</h2>
+      <p> brief overview of my professional experience, skills, and the roles I have taken on.</p>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-item reveal">
+        <div class="period">March 2024 - March 2025</div>
+        <div>
+          <h3>Cold Caller</h3>
+          <div class="org">Resilient Service Solutions</div>
+          <p>Receiving and prioritizing calls from customers or clients.</p>
+          <p>Coordinating the dispatch of services.</p>
+          <p>Monitoring and tracking vehicles or personnel in the field.</p>
+          <p>Communicating with field staff to provide instructions and updates.</p>
+             
+        </div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="period">May 2022 - August 2024</div>
+        <div>
+          <h3>Social Media Manager</h3>
+          <div class="org">Upwork</div>
+          <p>Organizes all social media posts.</p>
+          <p>Approves all content to be posted on social media</p>
+          <p>Engages with readers and clients online</p>
+        </div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="period">April 2020 - Present</div>
+        <div>
+          <h3>Virtual Assistant</h3>
+          <div class="org">Upwork</div>
+          <p>Manage calendars and schedule meetings</p>
+          <p>Set reminders and organize appointments</p>
+          <p>Book travel, manage appointments, and handle personal scheduling</p>
+          <p>Assist with light personal research or errands as needed</p>
+          <p>Provide executive assistance and administrative support</p>
+          <p>Manage and update contacts, pipelines, and workflows in GoHighLevel CRM</p>
+          <p>Communicate and collaborate with the team via Slack</p>
+          <p>Create and edit video content for marketing and social media</p>
+             
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. VIDEO WORK (3 clips) -->
+  <section id="video-work">
+    <div class="section-head reveal">
+      <h2>Video work</h2>
+      <p>A collection of short videos highlighting my creative projects and editing work.</p>
+    </div>
+
+    <div class="video-row" id="reelTrack">
+
+      <div class="work-card">
+        <div class="video-frame">
+          <video id="video1" muted loop playsinline autoplay style="display:none;"></video>
+          <div class="placeholder-note" id="note1">
+            <div class="play-button">
+              <svg viewBox="0 0 24 24" fill="currentColor" style="color:var(--pink-deep);"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+            <span>Add your video</span>
+            <small>Set the video source in the script section</small>
+          </div>
+        </div>
+        <div class="meta">
+          <span class="tag">Project one</span>
+          <h3>Property Tour Reel</h3>
+          <p>Opens with a playful hook, then walks through a full home tour — bathroom, closet, and living spaces — built to catch attention fast before showing the space in detail.</p>
+        </div>
+      </div>
+
+      <div class="work-card">
+        <div class="video-frame">
+          <video id="video2" muted loop playsinline autoplay style="display:none;"></video>
+          <div class="placeholder-note" id="note2">
+            <div class="play-button">
+              <svg viewBox="0 0 24 24" fill="currentColor" style="color:var(--pink-deep);"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+            <span>Add your video</span>
+            <small>Set the video source in the script section</small>
+          </div>
+        </div>
+        <div class="meta">
+          <span class="tag">Project two</span>
+          <h3>Day in the Life</h3>
+          <p>A behind-the-scenes, real-time look at a moving/unboxing day, giving followers a relatable, personal glimpse instead of a polished pitch.</p>
+        </div>
+      </div>
+
+      <div class="work-card">
+        <div class="video-frame">
+          <video id="video3" muted loop playsinline autoplay style="display:none;"></video>
+          <div class="placeholder-note" id="note3">
+            <div class="play-button">
+              <svg viewBox="0 0 24 24" fill="currentColor" style="color:var(--pink-deep);"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+            <span>Add your video</span>
+            <small>Set the video source in the script section</small>
+          </div>
+        </div>
+        <div class="meta">
+          <span class="tag">Project three</span>
+          <h3>Educational Video</h3>
+          <p>This filmed in a home setting, answering common questions in a clear, informative format.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 6. SAMPLE WORK (9 images) -->
+  <section id="sample-work">
+    <div class="section-head reveal">
+      <h2>My sample work</h2>
+      <p>Explore a selection of my work, showcasing my skills, creativity, and attention to detail.</p>
+    </div>
+
+    <div class="image-grid" id="sampleWorkGrid"></div>
+  </section>
+
+  <!-- 6. CONTACT DETAILS -->
+  <section id="contact" class="contact reveal">
+    <h2>Let’s Work Together</h2>
+    <p class="sub">Looking for support with your daily tasks, admin work, or online business? Let’s discuss how I can help.</p>
+    <a href="mailto:cabialaprily21@gmail.com" class="btn primary">Say hello</a>
+    <div class="links">
+      <a href="https://www.instagram.com/aprilycabial">Instagram</a>
+      <a href="https://www.linkedin.com/in/aprilycabial-smmva/?isSelfProfile=false">LinkedIn</a>
+      <a href="https://www.facebook.com/share/1DU2Mfa7k6/">Facebook</a>
+      <a href="Https://wa.me/639338192596/">WhatsApp</a>
+    </div>
+  </section>
+
+</div>
+
+<footer>© <span id="year"></span> — Aprily Cabial.</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // build the 13 skill chips
+  const skillsGrid = document.getElementById('skillsGrid');
+  const skillList = [
+    'Cold Calling & Customer Support','Social Media Management','Content Planning & Strategy','Calendar & Meeting Scheduling',
+    'Email Management','Project Management','Data Collection & Analysis','Google Suite & MS Office',
+    'Slack & Team Communication','Appointment Scheduling','GoHighLevel CRM Management','Video Editing & Content Creation','Executive Assistance & Administrative Support'
+  ];
+  skillList.forEach(skill => {
+    const chip = document.createElement('div');
+    chip.className = 'skill-chip reveal';
+    chip.innerHTML = `<h3>${skill}</h3>`;
+    skillsGrid.appendChild(chip);
+  });
+
+    // build the 9 sample-work image cards
+  const sampleWorkGrid = document.getElementById('sampleWorkGrid');
+  const iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>';
+
+  const sampleWork = [
+    { tag: 'Sample 1', title: 'Sports Feature Graphic', desc: 'Green-toned blog/article promo layout for a sports facility, built around a bold heading-and-title stack over a court photo.' },
+    { tag: 'Sample 2', title: 'Basketball Action Flyer', desc: 'High-energy yellow-and-red poster design featuring an athlete mid-play, with a bold headline block for a company announcement or article.' },
+    { tag: 'Sample 3', title: 'Wellness Coach Promo', desc: 'Clean, white-background flyer for a health and wellness coach, pairing a friendly portrait with a simple plan/pricing panel.' },
+    { tag: 'Sample 4', title: 'Recipe eBook Cover', desc: 'Soft blue gingham cover design for a downloadable recipe collection, styled like a printed cookbook.' },
+    { tag: 'Sample 5', title: 'Recipe Highlight Card', desc: 'Fresh, green-accented social graphic promoting a single recipe, built to drive traffic to a website link.' },
+    { tag: 'Sample 6', title: 'Black Friday Sale Ad', desc: 'Bold, dark-mode sale graphic with a large "50% OFF" callout and discount code, designed for maximum scroll-stopping contrast.' },
+    { tag: 'Sample 7', title: 'Sports Portrait Poster', desc: 'Pink neon-framed portrait design for an athlete spotlight or team social post, with a quote callout.' },
+    { tag: 'Sample 8', title: 'Business Training Flyer', desc: 'Blue corporate-style flyer promoting a business/finance webinar or course, laid out like a mini info-sheet with a checklist.' },
+    { tag: 'Sample 9', title: 'Idea/Education Concept Graphic', desc: 'Green conceptual illustration using a head-and-lightbulb motif, built for an educational or motivational message.' }
+  ];
+
+  sampleWork.forEach((item, index) => {
+    const i = index + 1;
+    const card = document.createElement('div');
+    card.className = 'image-card reveal';
+    card.innerHTML = `
+      <div class="image-frame">
+        <img id="img${i}" src="" alt="${item.title}">
+        <div class="placeholder-note" id="imgnote${i}">
+          ${iconSvg}
+          <span>Image ${i}</span>
+        </div>
+      </div>
+      <div class="meta">
+        <span class="tag">${item.tag}</span>
+        <h3>${item.title}</h3>
+        <p>${item.desc}</p>
+      </div>
+    `;
+    sampleWorkGrid.appendChild(card);
+  });
+
+  // cursor blob (desktop only)
+  const blob = document.getElementById('blob');
+  let mx = window.innerWidth/2, my = window.innerHeight/2, bx = mx, by = my;
+  window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function animateBlob(){
+    bx += (mx - bx) * 0.08;
+    by += (my - by) * 0.08;
+    blob.style.transform = `translate(${bx}px, ${by}px) translate(-50%,-50%)`;
+    requestAnimationFrame(animateBlob);
+  }
+  animateBlob();
+  window.addEventListener('mouseleave', () => blob.style.opacity = '0');
+  window.addEventListener('mouseenter', () => blob.style.opacity = '1');
+
+  // scroll reveal
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // ============================================================
+  // === ADD YOUR OWN CONTENT HERE ===
+  // ============================================================
+
+  // --- Your photo (circle, top of hero) ---
+  setPhoto("Aprily.jpg");
+
+  function setPhoto(src){
+    document.getElementById('hero-img').src = src;
+    document.getElementById('hero-img').style.display = 'block';
+    document.getElementById('hero-photo-note').style.display = 'none';
+  }
+
+  // --- Your 3 videos (autoplay, muted, looping) ---
+  // setVideo(1, "videos/my-first-project.mp4");
+  // setVideo(2, "videos/my-second-project.mp4");
+  // setVideo(3, "https://example.com/my-third-project.mp4");
+
+  function setVideo(n, src){
+    const vid = document.getElementById('video' + n);
+    const note = document.getElementById('note' + n);
+    vid.querySelector('source')?.remove();
+    const source = document.createElement('source');
+    source.src = src;
+    vid.appendChild(source);
+    vid.load();
+    vid.style.display = 'block';
+    note.style.display = 'none';
+    vid.play().catch(() => {}); // some browsers need this nudge for autoplay
+  }
+
+  // --- Your 9 sample work images ---
+  // setImage(1, "images/work-1.jpg");
+  // setImage(2, "images/work-2.jpg");
+  // ... up to setImage(9, "...")
+
+  function setImage(n, src){
+    const img = document.getElementById('img' + n);
+    const note = document.getElementById('imgnote' + n);
+    img.src = src;
+    img.style.display = 'block';
+    note.style.display = 'none';
+  }
+
+  // ============================================================
+  // Example usage (uncomment and edit once your files are ready):
+  //
+  // setPhoto("me.jpg");
+  setVideo(1, "reel1.mp4");
+  setVideo(2, "reel2.mp4");
+  setVideo(3, "reel3.mp4");
+  setImage(1, "sample1.jpg");
+  setImage(2, "sample2.jpg");
+  setImage(3, "sample3.jpg");
+  setImage(4, "sample4.jpg");
+  setImage(5, "sample5.jpg");
+  setImage(6, "sample6.jpg");
+  setImage(7, "sample7.jpg");
+  setImage(8, "sample8.jpg");
+  setImage(9, "sample9.jpg");
+</script>
+
+</body>
+</html>
